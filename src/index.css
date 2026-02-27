@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/* 다크모드 class 방식 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 테마 확장 */
+@theme {
+  --color-primary: #00806f;
+  --color-background-light: #f5f8f8;
+  --color-background-dark: #0f2320;
+
+  --font-display: "Space Grotesk", sans-serif;
+
+  --radius: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+}
+
+/* 전체 폰트 지정 */
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Material Icons 기본 스타일 */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* =============================================
+       FullCalendar 커스텀 스타일
+       - 기본 FullCalendar 테마를 우리 디자인에 맞게 덮어씀
+    ============================================= */
+
+    /* 캘린더 전체 테두리, 배경 제거 */
+    #calendar .fc {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* 툴바(헤더): 월/화살표 버튼 영역 */
+    #calendar .fc-toolbar {
+      padding: 20px 24px 16px;
+      margin-bottom: 0 !important;
+    }
+
+    #calendar .fc-toolbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* 툴바 이전/다음/오늘 버튼 스타일 */
+    #calendar .fc-button {
+      background-color: transparent !important;
+      border: none !important;
+      color: #64748b !important;
+      box-shadow: none !important;
+      padding: 4px 8px !important;
+      border-radius: 8px !important;
+      transition: background 0.15s;
+    }
+
+    #calendar .fc-button:hover {
+      background-color: #f1f5f9 !important;
+      color: #00806f !important;
+    }
+
+    #calendar .fc-button-primary:not(:disabled).fc-button-active,
+    #calendar .fc-button-primary:not(:disabled):active {
+      background-color: rgba(0,128,111,0.1) !important;
+      color: #00806f !important;
+    }
+
+    /* 요일 헤더 (Sun, Mon ...) */
+    #calendar .fc-col-header-cell {
+      padding: 12px 0;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      border: none;
+      background: transparent;
+    }
+
+    #calendar .fc-col-header-cell-cushion {
+      color: #94a3b8;
+    }
+
+    /* 날짜 셀 */
+    #calendar .fc-daygrid-day {
+      min-height: 90px;
+      border-color: #f1f5f9;
+    }
+
+    /* 날짜 숫자 */
+    #calendar .fc-daygrid-day-number {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      padding: 8px;
+    }
+
+    /* 오늘 날짜 셀 배경 */
+    #calendar .fc-day-today {
+      background-color: rgba(0, 128, 111, 0.04) !important;
+    }
+
+    /* 오늘 날짜 숫자: 초록 원으로 강조 */
+    #calendar .fc-day-today .fc-daygrid-day-number {
+      background-color: #00806f;
+      color: white !important;
+      border-radius: 9999px;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px;
+    }
+
+    /* 이벤트(문제 풀이 기록) 스타일 */
+    #calendar .fc-event {
+      background-color: rgba(0, 128, 111, 0.1) !important;
+      border: none !important;
+      border-left: 2px solid #00806f !important;
+      border-radius: 4px !important;
+      padding: 1px 6px !important;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #calendar .fc-event:hover {
+      background-color: rgba(0, 128, 111, 0.2) !important;
+    }
+
+    /* 이벤트 텍스트 */
+    #calendar .fc-event-title {
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      color: #00806f !important;
+    }
+
+    /* 이벤트 시간 숨김 (날짜만 표시) */
+    #calendar .fc-event-time {
+      display: none;
+    }
+
+    /* 캘린더 외곽 테두리 제거 */
+    #calendar .fc-scrollgrid {
+      border: none !important;
+    }
+
+    #calendar .fc-scrollgrid td:last-child,
+    #calendar .fc-scrollgrid th:last-child {
+      border-right: none !important;
+    }
+
+    #calendar .fc-scrollgrid-section > * {
+      border-left: none !important;
+    }
+
+    /* "more" 링크 (+N more) */
+    #calendar .fc-daygrid-more-link {
+      font-size: 10px;
+      font-weight: 700;
+      color: #00806f;
+    }
