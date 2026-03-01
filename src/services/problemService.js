@@ -6,7 +6,7 @@ const getProblemList = async (page, size, repositoryId) => {
             page, size, repositoryId
         }
     });
-    return response.data;
+    return response.data.data;
 }
 
 export default getProblemList;
