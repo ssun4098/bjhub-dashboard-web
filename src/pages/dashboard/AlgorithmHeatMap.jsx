@@ -1,206 +1,101 @@
-import { Treemap, ResponsiveContainer } from 'recharts';
+import { useState, useEffect, useMemo } from 'react';
+import {
+  BarChart, Bar, XAxis, YAxis,
+  Tooltip, CartesianGrid, ResponsiveContainer,
+} from 'recharts';
+import getAlgorithmStat from '../../services/algorithmService';
 
-// #region Sample data
-const data = [
-  {
-    name: 'axis',
-    children: [
-      { name: 'Axes', size: 1302 },
-      { name: 'Axis', size: 24593 },
-      { name: 'AxisGridLine', size: 652 },
-      { name: 'AxisLabel', size: 636 },
-      { name: 'CartesianAxes', size: 6703 },
-    ],
-  },
-  {
-    name: 'controls',
-    children: [
-      { name: 'AnchorControl', size: 2138 },
-      { name: 'ClickControl', size: 3824 },
-      { name: 'Control', size: 1353 },
-      { name: 'ControlList', size: 4665 },
-      { name: 'DragControl', size: 2649 },
-      { name: 'ExpandControl', size: 2832 },
-      { name: 'HoverControl', size: 4896 },
-      { name: 'IControl', size: 763 },
-      { name: 'PanZoomControl', size: 5222 },
-      { name: 'SelectionControl', size: 7862 },
-      { name: 'TooltipControl', size: 8435 },
-    ],
-  },
-  {
-    name: 'data',
-    children: [
-      { name: 'Data', size: 20544 },
-      { name: 'DataList', size: 19788 },
-      { name: 'DataSprite', size: 10349 },
-      { name: 'EdgeSprite', size: 3301 },
-      { name: 'NodeSprite', size: 19382 },
-      {
-        name: 'render',
-        children: [
-          { name: 'ArrowType', size: 698 },
-          { name: 'EdgeRenderer', size: 5569 },
-          { name: 'IRenderer', size: 353 },
-          { name: 'ShapeRenderer', size: 2247 },
-        ],
-      },
-      { name: 'ScaleBinding', size: 11275 },
-      { name: 'Tree', size: 7147 },
-      { name: 'TreeBuilder', size: 9930 },
-    ],
-  },
-  {
-    name: 'events',
-    children: [
-      { name: 'DataEvent', size: 7313 },
-      { name: 'SelectionEvent', size: 6880 },
-      { name: 'TooltipEvent', size: 3701 },
-      { name: 'VisualizationEvent', size: 2117 },
-    ],
-  },
-  {
-    name: 'legend',
-    children: [
-      { name: 'Legend', size: 20859 },
-      { name: 'LegendItem', size: 4614 },
-      { name: 'LegendRange', size: 10530 },
-    ],
-  },
-  {
-    name: 'operator',
-    children: [
-      {
-        name: 'distortion',
-        children: [
-          { name: 'BifocalDistortion', size: 4461 },
-          { name: 'Distortion', size: 6314 },
-          { name: 'FisheyeDistortion', size: 3444 },
-        ],
-      },
-      {
-        name: 'encoder',
-        children: [
-          { name: 'ColorEncoder', size: 3179 },
-          { name: 'Encoder', size: 4060 },
-          { name: 'PropertyEncoder', size: 4138 },
-          { name: 'ShapeEncoder', size: 1690 },
-          { name: 'SizeEncoder', size: 1830 },
-        ],
-      },
-      {
-        name: 'filter',
-        children: [
-          { name: 'FisheyeTreeFilter', size: 5219 },
-          { name: 'GraphDistanceFilter', size: 3165 },
-          { name: 'VisibilityFilter', size: 3509 },
-        ],
-      },
-      { name: 'IOperator', size: 1286 },
-      {
-        name: 'label',
-        children: [
-          { name: 'Labeler', size: 9956 },
-          { name: 'RadialLabeler', size: 3899 },
-          { name: 'StackedAreaLabeler', size: 3202 },
-        ],
-      },
-      {
-        name: 'layout',
-        children: [
-          { name: 'AxisLayout', size: 6725 },
-          { name: 'BundledEdgeRouter', size: 3727 },
-          { name: 'CircleLayout', size: 9317 },
-          { name: 'CirclePackingLayout', size: 12003 },
-          { name: 'DendrogramLayout', size: 4853 },
-          { name: 'ForceDirectedLayout', size: 8411 },
-          { name: 'IcicleTreeLayout', size: 4864 },
-          { name: 'IndentedTreeLayout', size: 3174 },
-          { name: 'Layout', size: 7881 },
-          { name: 'NodeLinkTreeLayout', size: 12870 },
-          { name: 'PieLayout', size: 2728 },
-          { name: 'RadialTreeLayout', size: 12348 },
-          { name: 'RandomLayout', size: 870 },
-          { name: 'StackedAreaLayout', size: 9121 },
-          { name: 'TreeMapLayout', size: 9191 },
-        ],
-      },
-      { name: 'Operator', size: 2490 },
-      { name: 'OperatorList', size: 5248 },
-      { name: 'OperatorSequence', size: 4190 },
-      { name: 'OperatorSwitch', size: 2581 },
-      { name: 'SortOperator', size: 2023 },
-    ],
-  },
-];
-// #endregion
+const buildChartData = (algorithms, limit) =>
+  [...algorithms]
+    .sort((a, b) => b.solvedCount - a.solvedCount)
+    .slice(0, limit)
+    .reverse()
+    .map((algo) => ({ name: algo.algorithmName, count: algo.solvedCount }));
 
-const COLORS = ['#004d3f', '#006858', '#00806f', '#009882', '#00b096', '#33c4ae'];
-
-const CustomizedContent = (props) => {
-  const { root, depth, x, y, width, height, index, name } = props;
-
+const CustomTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const entry = payload[0]?.payload;
+  const count = payload.find((p) => p.dataKey === 'count')?.value ?? 0;
   return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        style={{
-          fill: depth < 2 ? COLORS[Math.floor((index / (root?.children?.length ?? 1)) * 6)] : 'transparent',
-          stroke: '#ffffff18',
-          strokeWidth: 2 / (depth + 1e-10),
-          strokeOpacity: 1 / (depth + 1e-10),
-        }}
-      />
-      {depth === 1 && width > 50 && height > 24 ? (
-        <text
-          x={x + width / 2}
-          y={y + height / 2 + 5}
-          textAnchor="middle"
-          fill="#fff"
-          fontSize={13}
-          fontFamily="'Space Grotesk', sans-serif"
-          fontWeight={600}
-        >
-          {name}
-        </text>
-      ) : null}
-      {depth === 1 && width > 36 ? (
-        <text
-          x={x + 8}
-          y={y + 17}
-          fill="#fff"
-          fontSize={10}
-          fontFamily="'Space Grotesk', sans-serif"
-          fontWeight={700}
-          fillOpacity={0.6}
-        >
-          {String(index + 1).padStart(2, '0')}
-        </text>
-      ) : null}
-    </g>
+    <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs shadow">
+      <p className="font-bold mb-1 text-slate-800 dark:text-slate-100">{entry?.name}</p>
+      <p className="text-slate-500 dark:text-slate-400">
+        풀이 수: <span className="font-bold text-primary">{count}</span>
+      </p>
+    </div>
   );
 };
 
+const LIMIT_OPTIONS = [5, 10, 15, 20];
+
 const AlgorithmHeatMap = () => {
+  const [algorithms, setAlgorithms] = useState([]);
+  const [limit, setLimit] = useState(10);
+
+  useEffect(() => {
+    const fetch = async () => {
+      // TODO repositoryId 상태관리 추가
+      const repositoryId = 4;
+      const response = await getAlgorithmStat({ repositoryId });
+      setAlgorithms(response.data.algorithms);
+    };
+    fetch();
+  }, []);
+
+  const data = useMemo(() => buildChartData(algorithms, limit), [algorithms, limit]);
+
   return (
     <div className="h-full flex flex-col">
       <div className="p-6 border-b border-primary/5 flex items-center justify-between shrink-0">
-        <h3 className="text-lg font-bold">Algorithm Categories</h3>
-        <span className="text-xs font-bold text-primary bg-primary/10 px-2.5 py-1 rounded-full">Treemap</span>
+        <h3 className="text-lg font-bold">Algorithm Distribution</h3>
+        <div className="flex items-center gap-1">
+          {LIMIT_OPTIONS.map((n) => (
+            <button
+              key={n}
+              onClick={() => setLimit(n)}
+              className={`text-xs font-bold px-2.5 py-1 rounded-full transition-colors ${
+                limit === n
+                  ? 'text-primary bg-primary/10'
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              {n}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="flex-1 min-h-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <Treemap
-            data={data}
-            dataKey="size"
-            stroke="#fff"
-            fill="#00806f"
-            content={CustomizedContent}
-          />
-        </ResponsiveContainer>
+
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div style={{ height: Math.max(data.length * 48, 100) }} className="px-4 pt-4 pb-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(148,163,184,0.15)" />
+              <XAxis
+                type="number"
+                allowDecimals={false}
+                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={110}
+                tick={{ fontSize: 13, fill: '#475569' }}
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(148,163,184,0.08)' }} />
+              <Bar
+                dataKey="count"
+                maxBarSize={18}
+                fill="#00806f"
+                fillOpacity={0.85}
+                radius={[0, 3, 3, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

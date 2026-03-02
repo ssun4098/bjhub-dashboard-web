@@ -16,7 +16,7 @@ function App() {
 
       <div className="p-8 max-w-7xl mx-auto w-full grid grid-cols-1 xl:grid-cols-12 gap-8">
         <div className="xl:col-span-8 space-y-6">
-          <div className="bg-white dark:bg-background-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 overflow-hidden h-[480px]">
+          <div className="bg-white dark:bg-background-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 overflow-hidden h-[570px]">
             <CustomContentTreemap />
           </div>
         </div>

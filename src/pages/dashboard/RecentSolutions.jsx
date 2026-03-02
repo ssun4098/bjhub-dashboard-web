@@ -1,16 +1,40 @@
 import { useEffect, useState } from 'react';
 import getProblemList from '../../services/problemService'
 import SolutionItem from './SolutionItem';
+import dayjs from 'dayjs';
 
 function RecentSolutions() {
     const [items, setItems] = useState([]);
+    const [solvedThisWeek, setSolvedThisWeek] = useState(0);
 useEffect(() => {
     const fetch = async () => {
-        const response = await getProblemList(0, 10, 4);
+        // TODO repositoryId 상태관리 추가
+        const size = 10;
+        const page = 0;
+        const repositoryId = 4;
+        const response = await getProblemList({
+            size, page, repositoryId
+        });
         setItems(response.data);
     };
     fetch();
 }, []);
+useEffect(() => {
+    const today = dayjs();
+    const startDate = today.subtract(7, 'day').startOf('day').format('YYYY-MM-DD HH:mm');
+    const endDate = today.endOf('day').format('YYYY-MM-DD HH:mm');
+    const fetch = async () => {
+        // TODO repositoryId 상태관리 추가
+        const size = 1;
+        const page = 0;
+        const repositoryId = 4;
+        const response = await getProblemList({
+            size, page, repositoryId, startDate, endDate
+        });
+        setSolvedThisWeek(response.count);
+    };
+    fetch();
+})
 
     
 
@@ -38,15 +62,11 @@ useEffect(() => {
                 
                 </div>
 
-                <div className="mt-auto p-6 bg-primary/5 border-t border-primary/10 rounded-b-xl grid grid-cols-2 gap-4">
-                <div className="text-center">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase">Solved this week</p>
-                    <p className="text-2xl font-bold text-primary">12</p>
-                </div>
-                <div className="text-center">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase">Streak Days</p>
-                    <p className="text-2xl font-bold text-primary">5</p>
-                </div>
+                <div className="mt-auto p-6 bg-primary/5 border-t border-primary/10 rounded-b-xl grid gap-4">
+                    <div className="text-center">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase">Solved this week</p>
+                        <p className="text-2xl font-bold text-primary">{solvedThisWeek}</p>
+                    </div>
                 </div>
 
             </div>
