@@ -41,14 +41,14 @@ useEffect(() => {
     return (
         <>
             <div className="xl:col-span-4 space-y-6">
-            <div className="bg-white dark:bg-background-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 flex flex-col h-full">
+            <div className="bg-white dark:bg-background-dark rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 flex flex-col h-[570px]">
 
                 <div className="p-6 border-b border-primary/5 flex items-center justify-between">
                 <h3 className="text-lg font-bold">Recent Solutions</h3>
                 <a className="text-xs font-bold text-primary hover:underline" href="#">View All</a>
                 </div>
 
-                <div className="p-4 flex-1 space-y-3">
+                <div className="p-4 flex-1 min-h-0 overflow-y-auto space-y-3">
                 {items.map((item) => (
                     <SolutionItem
                     key={item.id}

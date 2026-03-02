@@ -65,8 +65,8 @@ const AlgorithmHeatMap = () => {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
-        <div style={{ height: Math.max(data.length * 48, 100) }} className="px-4 pt-4 pb-2">
+      <div className="flex-1 min-h-0">
+        <div className="px-4 pt-4 pb-2 h-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(148,163,184,0.15)" />
